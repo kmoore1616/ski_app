@@ -8,21 +8,24 @@ import java.util.Objects;
 
 public class Review_View {
     private JFrame frame;
-    private JPanel toolbar_panel, button_panel, content_panel, main_panel, dialog_input_panel, dialog_action_panel;
-    private JPanel dialog_button_panel;
+    private JPanel toolbar_panel, button_panel, content_panel, main_panel;
     private JTextArea content_area;
     private JButton enter_day, refresh, ski_day_button, summary_button, forecast_button;
     private Image refresh_icon;
 
     private JDialog dialog;
+    private JPanel dialog_input_panel, dialog_action_panel, dialog_button_panel, dialog_resort_panel, dialog_tour_panel;
     private JRadioButton resort_button, tour_button;
     private ButtonGroup ski_day_type_group;
     private JTextField dateField, location_field, condition_field, avy_field, vertical_field;
-    private JTextArea review_area, runs;
-    private JTextField resort, vertical, review, snowField;
+    private JTextField resort_field;
+    private JTextArea review_area, runs_area;
     private JButton dialogSubmitButton, dialogCancelButton;
+    private JScrollPane runs_scroll, review_scroll;
 
-    private String contents;
+
+    private final int RESORT = 0;
+    private final int TOUR = 1;
 
     public Review_View(){
         frame = new JFrame();
@@ -32,7 +35,9 @@ public class Review_View {
         main_panel = new JPanel();
         content_area = new JTextArea(50, 80);
         enter_day = new JButton("Enter Day");
-        // Found this on https://stackoverflow.com/questions/4801386/how-do-i-add-an-image-to-a-jbutton
+        dialog_resort_panel = new JPanel();
+        dialog_tour_panel = new JPanel();
+
         try{
             refresh_icon = ImageIO.read(getClass().getResource("resources/refresh.png"));
         } catch (IOException e) {
@@ -46,18 +51,40 @@ public class Review_View {
 
         // Dialog
         dialog = new JDialog(frame, "Enter Ski Day", true);
-        dateField = new JTextField(10);
-        snowField = new JTextField(10);
+
+        // Buttons
         dialogSubmitButton = new JButton("Submit");
         dialogCancelButton = new JButton("Cancel");
-        dialog_input_panel = new JPanel(new GridLayout(2,2,10,10));
+
+        // Panels
+        dialog_input_panel = new JPanel();
         dialog_action_panel = new JPanel();
         dialog_button_panel = new JPanel();
+
+        // Radio Buttons
         resort_button = new JRadioButton("Resort Day");
         resort_button.setSelected(true);
         tour_button = new JRadioButton("Tour Day");
         ski_day_type_group = new ButtonGroup();
 
+        // Inputs
+        dateField = new JTextField(15);
+        location_field  = new JTextField(15);
+        condition_field = new JTextField(15);
+        avy_field       = new JTextField(15);
+        vertical_field  = new JTextField(15);
+        resort_field    = new JTextField(15);
+
+        // Text Areas
+        review_area = new JTextArea(5, 20);
+        review_area.setLineWrap(true);
+        review_area.setWrapStyleWord(true);
+        review_scroll = new JScrollPane(review_area);
+
+        runs_area   = new JTextArea(5, 20);
+        runs_area.setLineWrap(true);
+        runs_area.setWrapStyleWord(true);
+        runs_scroll = new JScrollPane(runs_area);
     }
 
     public void init_UI(){
@@ -110,35 +137,171 @@ public class Review_View {
     private void init_Dialog(){
         ski_day_type_group.add(resort_button);
         ski_day_type_group.add(tour_button);
+
         dialog_button_panel.add(resort_button);
         dialog_button_panel.add(tour_button);
+        dialog_button_panel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
 
-        dialog_input_panel.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
-        dialog_input_panel.add(new JLabel("Date: "));
-        dialog_input_panel.add(dateField);
-        dialog_input_panel.add(new JLabel(("Entry: ")));
-        dialog_input_panel.add(snowField);
+        // We call switchPanel here to populate the center area initially
+        switchPanel(RESORT);
 
-        dialog_action_panel.add(dialogSubmitButton);
         dialog_action_panel.add(dialogCancelButton);
+        dialog_action_panel.add(dialogSubmitButton);
+        dialog_action_panel.setBorder(BorderFactory.createEmptyBorder(5, 10, 10, 10));
 
         dialog.setLayout(new BorderLayout());
         dialog.add(dialog_button_panel, BorderLayout.NORTH);
-        dialog.add(dialog_input_panel);
+        dialog.add(dialog_input_panel, BorderLayout.CENTER);
         dialog.add(dialog_action_panel, BorderLayout.SOUTH);
+
         dialog.pack();
         dialog.setLocationRelativeTo(frame);
+    }
 
+    public void switchPanel(int selection){
+        dialog_input_panel.removeAll();
+
+        // Setup generic constraints
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5); // Padding between components
+        gbc.anchor = GridBagConstraints.WEST; // Left align components
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        if(selection == RESORT) {
+            dialog_resort_panel.removeAll(); // Clear to re-add shared components (Date/Review)
+
+            gbc.gridx = 0; gbc.gridy = 0;
+            dialog_resort_panel.add(new JLabel("Date: "), gbc);
+            gbc.gridx = 1; gbc.weightx = 1.0;
+            dialog_resort_panel.add(dateField, gbc);
+
+            gbc.gridx = 0; gbc.gridy = 1; gbc.weightx = 0.0;
+            dialog_resort_panel.add(new JLabel("Resort: "), gbc);
+            gbc.gridx = 1; gbc.weightx = 1.0;
+            dialog_resort_panel.add(resort_field, gbc);
+
+            gbc.gridx = 0; gbc.gridy = 2; gbc.weightx = 0.0;
+            dialog_resort_panel.add(new JLabel("Vertical Gained:"), gbc);
+            gbc.gridx = 1; gbc.weightx = 1.0;
+            dialog_resort_panel.add(vertical_field, gbc);
+
+            gbc.gridx = 0; gbc.gridy = 3; gbc.weightx = 0.0;
+            dialog_resort_panel.add(new JLabel("Runs: "), gbc);
+            gbc.gridx = 1; gbc.weightx = 1.0; gbc.fill = GridBagConstraints.BOTH; gbc.weighty = 1.0;
+            dialog_resort_panel.add(runs_scroll, gbc); // Add scroll pane, not area
+
+            gbc.gridx = 0; gbc.gridy = 4; gbc.weightx = 0.0; gbc.weighty = 0.0; gbc.fill = GridBagConstraints.HORIZONTAL;
+            dialog_resort_panel.add(new JLabel("Review of Day:"), gbc);
+            gbc.gridx = 1; gbc.weightx = 1.0; gbc.fill = GridBagConstraints.BOTH; gbc.weighty = 1.0;
+            dialog_resort_panel.add(review_scroll, gbc); // Add scroll pane
+
+            dialog_input_panel.add(dialog_resort_panel, BorderLayout.CENTER);
+
+        } else if(selection == TOUR){
+            dialog_tour_panel.removeAll(); // Clear to re-add shared components
+
+            gbc.gridx = 0; gbc.gridy = 0;
+            dialog_tour_panel.add(new JLabel("Date: "), gbc);
+            gbc.gridx = 1; gbc.weightx = 1.0;
+            dialog_tour_panel.add(dateField, gbc);
+
+            gbc.gridx = 0; gbc.gridy = 1; gbc.weightx = 0.0;
+            dialog_tour_panel.add(new JLabel("Location: "), gbc);
+            gbc.gridx = 1; gbc.weightx = 1.0;
+            dialog_tour_panel.add(location_field, gbc);
+
+            gbc.gridx = 0; gbc.gridy = 2; gbc.weightx = 0.0;
+            dialog_tour_panel.add(new JLabel("Conditions: "), gbc);
+            gbc.gridx = 1; gbc.weightx = 1.0;
+            dialog_tour_panel.add(condition_field, gbc);
+
+            gbc.gridx = 0; gbc.gridy = 3; gbc.weightx = 0.0;
+            dialog_tour_panel.add(new JLabel("Avalanche Conditions: "), gbc);
+            gbc.gridx = 1; gbc.weightx = 1.0;
+            dialog_tour_panel.add(avy_field, gbc);
+
+            gbc.gridx = 0; gbc.gridy = 4; gbc.weightx = 0.0;
+            dialog_tour_panel.add(new JLabel("Vertical Gained:"), gbc);
+            gbc.gridx = 1; gbc.weightx = 1.0;
+            dialog_tour_panel.add(vertical_field, gbc);
+
+            gbc.gridx = 0; gbc.gridy = 5; gbc.weightx = 0.0;
+            dialog_tour_panel.add(new JLabel("Review of Day:"), gbc);
+            gbc.gridx = 1; gbc.weightx = 1.0; gbc.fill = GridBagConstraints.BOTH; gbc.weighty = 1.0;
+            dialog_tour_panel.add(review_scroll, gbc);
+
+            dialog_input_panel.add(dialog_tour_panel, BorderLayout.CENTER);
+        }
+
+        dialog_input_panel.revalidate();
+        dialog_input_panel.repaint();
+        dialog.pack();
+    }
+
+    /*
+    public void switchPanel(int selection){
+       dialog_input_panel.removeAll();
+       if(selection == RESORT) {
+           dialog_input_panel.add(dialog_resort_panel);
+       }else if(selection == TOUR){
+           dialog_input_panel.add(dialog_tour_panel);
+       }
+       dialog_input_panel.revalidate();
+       dialog_input_panel.repaint();
+    }
+    */
+
+    public void clear_dialog(){
+        dateField.setText("");
+        resort_field.setText("");
+        runs_area.setText("");
+        location_field.setText("");
+        condition_field.setText("");
+        avy_field.setText("");
+        vertical_field.setText("");
+        review_area.setText("");
+        resort_button.setSelected(true);
+        switchPanel(RESORT);
     }
 
     public void showDialog(){
-        dateField.setText("");
-        snowField.setText("");
         dialog.setVisible(true);
     }
 
     public void hideDialog(){
         dialog.setVisible(false);
+    }
+
+    public String getDateField() {
+        return dateField.getText();
+    }
+
+    public String getLocation_field() {
+        return location_field.getText();
+    }
+
+    public String getCondition_field() {
+        return condition_field.getText();
+    }
+
+    public String getAvy_field() {
+        return avy_field.getText();
+    }
+
+    public String getVertical_field() {
+        return vertical_field.getText();
+    }
+
+    public String getResort_field() {
+        return resort_field.getText();
+    }
+
+    public String getReview_area() {
+        return review_area.getText();
+    }
+
+    public String getRuns_area() {
+        return runs_area.getText();
     }
 
     public void addActionListenerEnterDay(ActionListener actionListener){enter_day.addActionListener(actionListener);}
@@ -147,5 +310,7 @@ public class Review_View {
     public void addActionListenerSummary(ActionListener actionListener){summary_button.addActionListener(actionListener);}
     public void addActionListenerForecast(ActionListener actionListener){forecast_button.addActionListener(actionListener);}
     public void addActionListenerDialogSubmit(ActionListener actionListener){dialogSubmitButton.addActionListener(actionListener);}
-    public void addActionListenerDialogCancel(ActionListener actionListener){dialogCancelButton.addActionListener(actionListener);}
+    public void addActionListenerDialogCancel(ActionListener actionListener) {dialogCancelButton.addActionListener(actionListener);}
+    public void addActionListenerResort(ActionListener actionListener){resort_button.addActionListener(actionListener);}
+    public void addActionListenerTour(ActionListener actionListener){tour_button.addActionListener(actionListener);}
 }

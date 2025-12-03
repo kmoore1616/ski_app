@@ -6,9 +6,9 @@ public class Tour_Day {
     private String avalanche_conditions;
     private int vertical;
     private String review;
-    private Date date;
+    private String date;
 
-    public Tour_Day(Date date, String location, String conditions, String avalanche_conditions, int vertical, String review) {
+    public Tour_Day(String date, String location, String conditions, String avalanche_conditions, int vertical, String review) {
         this.date = date;
         this.location = location;
         this.conditions = conditions;
