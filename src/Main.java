@@ -12,5 +12,7 @@ public class Main {
         Review_View view = new Review_View();
         view.init_UI();
 
+        Controller controller = new Controller(view);
+
     }
 }

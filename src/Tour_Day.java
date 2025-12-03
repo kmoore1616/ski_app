@@ -1,11 +1,15 @@
-public class Off_Piste {
+import java.util.Date;
+
+public class Tour_Day {
     private String location;
     private String conditions;
     private String avalanche_conditions;
     private int vertical;
     private String review;
+    private Date date;
 
-    public Off_Piste(String location, String conditions, String avalanche_conditions, int vertical, String review) {
+    public Tour_Day(Date date, String location, String conditions, String avalanche_conditions, int vertical, String review) {
+        this.date = date;
         this.location = location;
         this.conditions = conditions;
         this.avalanche_conditions = avalanche_conditions;
