@@ -1,6 +1,6 @@
 import java.util.Date;
 
-public class Resort_Day {
+public class Resort_Day extends Ski_Day{
     private String resort;
     private String runs;
     private int vertical;

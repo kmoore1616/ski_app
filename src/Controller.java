@@ -1,9 +1,12 @@
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 public class Controller {
     // Was originally against inheritance, but I would like a SkiDay object to hold everything in a list
+
+    static ArrayList<Ski_Day> days = new ArrayList<>();
 
     private Review_View reviewView;
     private Ski_Model skiModel;
@@ -56,8 +59,10 @@ public class Controller {
     public class ActionListenerSubmitDialog implements ActionListener{
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
+            // Talk to mal
+            Ski_Day day = null;
             if(current_selection == RESORT){
-                Resort_Day day = new Resort_Day(
+                day = new Resort_Day(
                        reviewView.getDateField(),
                        reviewView.getResort_field(),
                        reviewView.getRuns_area(),
@@ -66,7 +71,7 @@ public class Controller {
                 );
 
             } else if (current_selection == TOUR) {
-                Tour_Day day = new Tour_Day(
+                day = new Tour_Day(
                         reviewView.getDateField(),
                         reviewView.getLocation_field(),
                         reviewView.getCondition_field(),
@@ -74,8 +79,10 @@ public class Controller {
                         Integer.parseInt(reviewView.getVertical_field()),
                         reviewView.getReview_area()
                 );
-
             }
+
+            // When DB is implemented replace with updateDays method
+            days.add(day);
 
             reviewView.clear_dialog();
             reviewView.hideDialog();
