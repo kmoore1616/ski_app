@@ -1,18 +1,23 @@
 /*
     Sprint 1:
-    TODO Basic UI (different views for different screen?)
-    TODO Basic Controller
-    TODO Implement:
-        TODO on_piste class
-        TODO off_piste class
+    Done Basic UI (different views for different screen?)
+    Done Basic Controller
+    Done Implement:
+        Done TourDay class
+        Done ResortDay class
+
+    Sprint 2:
+    TODO Spin up DB CRUD
+    TODO Setup arraylist for SkiDay and associated methods
+    TODO Finish all gui elements for "Ski Day" Tab
  */
 
 public class Main {
     public static void main(String[] args){
-        Review_View view = new Review_View();
-        view.init_UI();
+        ReviewView view = new ReviewView();
+        view.initUI();
 
-        Controller controller = new Controller(view);
+        SkiDayController controller = new SkiDayController(view);
 
     }
 }
