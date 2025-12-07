@@ -6,12 +6,12 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class ReviewView {
+public class SkiDayView {
     private JFrame frame;
     private JPanel toolbar_panel, button_panel, content_panel, main_panel, delete_entry_panel;
     private JTextArea content_area;
     private JButton enter_day, refresh, ski_day_button, summary_button, forecast_button, delete_entry_button;
-    private JButton delete_cancel, delete_inner_button;
+    private JButton delete_cancel, delete_inner_button, print_page_button;
     private Image refresh_icon;
     private JDialog entry_dialog, delete_dialog;
     private JPanel dialog_input_panel, dialog_action_panel, dialog_button_panel, dialog_resort_panel, dialog_tour_panel;
@@ -27,7 +27,7 @@ public class ReviewView {
     private final int TOUR = 1;
 
 
-    public ReviewView(){
+    public SkiDayView(){
         // Review GUI
         frame = new JFrame();
         toolbar_panel = new JPanel();
@@ -37,6 +37,7 @@ public class ReviewView {
         content_area = new JTextArea(1, 1);
         enter_day = new JButton("Enter Day");
         content_scroll = new JScrollPane(content_area);
+
 
         // Delete
         delete_dialog = new JDialog(frame, "Delete Entry", true);
@@ -57,6 +58,7 @@ public class ReviewView {
         ski_day_button = new JButton("Ski Day");
         summary_button = new JButton("Summary");
         forecast_button = new JButton("Forecast");
+        print_page_button = new JButton("Print Page");
 
         // Dialog
         entry_dialog = new JDialog(frame, "Enter Ski Day", true);
@@ -105,6 +107,7 @@ public class ReviewView {
         toolbar_panel.add(ski_day_button);
         toolbar_panel.add(summary_button);
         toolbar_panel.add(forecast_button);
+        toolbar_panel.add(print_page_button);
 
         toolbar_panel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.BLACK));
 
@@ -387,4 +390,5 @@ public class ReviewView {
     public void addActionListenerDialogCancel(ActionListener actionListener) {dialog_cancel_button.addActionListener(actionListener);}
     public void addActionListenerResort(ActionListener actionListener){resort_button.addActionListener(actionListener);}
     public void addActionListenerTour(ActionListener actionListener){tour_button.addActionListener(actionListener);}
+    public void addActionListenerPrintPage(ActionListener actionListener){print_page_button.addActionListener(actionListener);}
 }

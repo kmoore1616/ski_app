@@ -5,15 +5,10 @@ import java.util.ArrayList;
 public class SkiModel {
     private static Connection connection;
 
-    private static final int RESORT = 0;
-    private static final int TOUR = 1;
-
     public SkiModel(){
         try {
             connection = Database_Connection.getConnection();
             createTable();
-
-            System.out.println();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -57,7 +52,12 @@ public class SkiModel {
                 "(date, location, conditions, runs, vertical, review) VALUES (?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement statement = connection.prepareStatement(insertCMD)) {
-            day.prepare_insert_statement(statement);
+            statement.setString(1, day.getDate());
+            statement.setString(2, day.getConditions());
+            statement.setString(3, day.getLocation());
+            statement.setString(4, day.getRuns());
+            statement.setInt(5, day.getVertical());
+            statement.setString(6, day.getReview());
             statement.executeUpdate();
             System.out.println("Inserted Record");
 

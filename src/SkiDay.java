@@ -57,13 +57,4 @@ public class SkiDay{
         return date;
     }
 
-    public void prepare_insert_statement(PreparedStatement preparedStatement) throws SQLException {
-        preparedStatement.setString(1, getDate());
-        preparedStatement.setString(2, getConditions());
-        preparedStatement.setString(3, getLocation());
-        preparedStatement.setString(4, getRuns());
-        preparedStatement.setInt(5, getVertical());
-        preparedStatement.setString(6, getReview());
-
-    }
 }
