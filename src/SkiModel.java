@@ -53,8 +53,8 @@ public class SkiModel {
 
         try (PreparedStatement statement = connection.prepareStatement(insertCMD)) {
             statement.setString(1, day.getDate());
-            statement.setString(2, day.getConditions());
-            statement.setString(3, day.getLocation());
+            statement.setString(2, day.getLocation());
+            statement.setString(3, day.getConditions());
             statement.setString(4, day.getRuns());
             statement.setInt(5, day.getVertical());
             statement.setString(6, day.getReview());

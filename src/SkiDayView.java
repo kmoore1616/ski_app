@@ -145,7 +145,7 @@ public class SkiDayView {
         initDialog();
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(800, 600);
+        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
         frame.setVisible(true);
     }
 
@@ -321,12 +321,12 @@ public class SkiDayView {
         for(SkiDay day : days){
             String id = String.valueOf(day.getId());
             String date = day.getDate();
-            String conditions = day.getConditions();
             String location = day.getLocation();
+            String conditions = day.getConditions();
             String runs = day.getRuns();
             String vertical = String.valueOf(day.getVertical());
             String reveiw = day.getReview();
-            content += ("ID: " +id+ " Date: " + date + " Conditions: " + conditions + " Location: " + location + " Vertical: "
+            content += ("ID: " +id+ " Date: " + date  + " Location: " + location + " Conditions: " + conditions +" Vertical: "
                     + vertical+ "\nRuns: " + runs + "\nReview: " + reveiw + "\n\n");
 
         }
