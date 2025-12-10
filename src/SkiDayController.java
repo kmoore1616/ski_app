@@ -15,7 +15,7 @@ public class SkiDayController {
 
     private void updateSkiDays(){
         days.clear();
-        days = SkiModel.getAllDays(current_selection);
+        days = SkiModel.getAllDays();
     }
 
     public SkiDayController(SkiDayView skiDayView) {
@@ -138,6 +138,7 @@ public class SkiDayController {
     public class ActionListenerPrintPage implements ActionListener{
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
+
 
         }
     }

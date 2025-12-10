@@ -8,12 +8,12 @@ import java.util.ArrayList;
 
 public class SkiDayView {
     private JFrame frame;
-    private JPanel toolbar_panel, button_panel, content_panel, main_panel, delete_entry_panel;
+    private JPanel toolbar_panel, button_panel, content_panel, main_panel, delete_entry_panel, print_panel;
     private JTextArea content_area;
     private JButton enter_day, refresh, ski_day_button, summary_button, forecast_button, delete_entry_button;
     private JButton delete_cancel, delete_inner_button, print_page_button;
     private Image refresh_icon;
-    private JDialog entry_dialog, delete_dialog;
+    private JDialog entry_dialog, delete_dialog, print_dialog;
     private JPanel dialog_input_panel, dialog_action_panel, dialog_button_panel, dialog_resort_panel, dialog_tour_panel;
     private JRadioButton resort_button, tour_button;
     private ButtonGroup ski_day_type_group;
@@ -28,6 +28,9 @@ public class SkiDayView {
 
 
     public SkiDayView(){
+        // To switch screens can I have this return a panel object with everything, then add to frame in a master view
+        // Call method from the master view? Each screen view does the same?
+
         // Review GUI
         frame = new JFrame();
         toolbar_panel = new JPanel();
@@ -356,9 +359,7 @@ public class SkiDayView {
         return location_field.getText();
     }
 
-    public String getCondition_field() {
-        return condition_field.getText();
-    }
+    public String getCondition_field() {return condition_field.getText();}
 
     public String getVertical_field() {return vertical_field.getText();}
 

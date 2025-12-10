@@ -15,7 +15,7 @@ public class SkiModel {
     }
 
 
-    public static ArrayList<SkiDay> getAllDays(int dayType){
+    public static ArrayList<SkiDay> getAllDays(){
         ArrayList<SkiDay> list = new ArrayList<>();
         String getCMD = "SELECT id, date, conditions, location, runs, vertical, review FROM skiDays";
 
