@@ -3,13 +3,14 @@ import javax.swing.event.ChangeListener;
 import java.awt.*;
 
 public class SummaryView {
-    private JPanel summary_panel, filter_panel, stats_panel;
+    private JPanel summary_panel, filter_panel, stats_panel, button_panel;
     private JSlider vertical_slider;
     private JLabel vertical_label, stats;
     private JScrollPane content_scroll;
     private JTextArea content_area;
+    private Font content_font, button_font;
 
-    public SummaryView(){
+    public SummaryView(Font content_font, Font button_font){
         summary_panel = new JPanel();
         stats_panel = new JPanel();
         filter_panel = new JPanel();
@@ -18,10 +19,15 @@ public class SummaryView {
         content_scroll = new JScrollPane(content_area);
         stats = new JLabel();
         vertical_label = new JLabel();
+        this.content_font = content_font;
+        this.button_font = button_font;
 
     }
 
     public void initUI(){
+        stats.setFont(content_font);
+        content_area.setFont(content_font);
+        content_area.setLineWrap(true);
         summary_panel.setLayout(new BorderLayout());
         summary_panel.add(content_scroll);
 

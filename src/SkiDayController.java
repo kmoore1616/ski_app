@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class SkiDayController {
-    static ArrayList<SkiDay> days = new ArrayList<>();
+    private static ArrayList<SkiDay> days = new ArrayList<>();
 
     private SkiDayView skiDayView;
     private int selectedDayId;
@@ -32,7 +32,6 @@ public class SkiDayController {
         skiDayView.addActionListenerSubmitUpdate(new ActionListenerSubmitUpdate());
 
         updateSkiDays();
-
         skiDayView.updateContentArea(days);
     }
 
@@ -53,19 +52,19 @@ public class SkiDayController {
     public class ActionListenerDeleteEntry implements ActionListener{
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
-            if(SkiModel.deleteEntryById(selectedDayId) == 0){
-                skiDayView.errorPopup();
-            }else{
+            try {
+                SkiModel.deleteEntryById(selectedDayId);
                 updateSkiDays();
                 skiDayView.updateContentArea(days);
                 skiDayView.deletePopup();
+            } catch (RuntimeException|SQLException e) {
+                skiDayView.errorPopup();
+                throw new RuntimeException(e);
             }
         }
     }
 
-
-
-
+    // This is almost useless, but its implemented so why not
     public class ActionListenerRefresh implements ActionListener{
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
@@ -74,13 +73,14 @@ public class SkiDayController {
         }
     }
 
+    @Deprecated // Dont know if this is the correct convention, but I want to keep these around in case I build out tour/resort days
     public class ActionListenerResort implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
         }
     }
 
-
+    @Deprecated
     public class ActionListenerTour implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
@@ -101,13 +101,13 @@ public class SkiDayController {
         }
     }
 
+    // TODO
     public class ActionListenerPrintPage implements ActionListener{
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
 
         }
     }
-
 
     public class ActionListenerCancelUpdate implements ActionListener{
         @Override
@@ -119,7 +119,6 @@ public class SkiDayController {
     }
 
     public class ActionListenerUpdateEntry implements ActionListener{
-
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
             SkiDay temp = skiDayView.getDayList().getSelectedValue();
@@ -153,7 +152,6 @@ public class SkiDayController {
                 skiDayView.updateContentArea(days);
                 skiDayView.updatePopup();
 
-                skiDayView.clearEntryDialog();
                 skiDayView.hideUpdateDialog();
             } catch (RuntimeException |SQLException e) {
                 skiDayView.errorPopup();
@@ -183,7 +181,6 @@ public class SkiDayController {
                 updateSkiDays();
                 skiDayView.updateContentArea(days);
 
-                skiDayView.clearEntryDialog();
                 skiDayView.hideEntryDialog();
             } catch (RuntimeException e) {
                 skiDayView.errorPopup();

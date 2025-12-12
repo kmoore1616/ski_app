@@ -13,17 +13,13 @@ public class SkiModel {
         }
     }
 
-
-
     public static ArrayList<SkiDay> getAllDays(){
         ArrayList<SkiDay> list = new ArrayList<>();
         String getCMD = "SELECT id, date, conditions, location, runs, vertical, review FROM skiDays";
 
         try(Statement statement = connection.createStatement()){
             ResultSet rs = statement.executeQuery(getCMD);
-
-
-    //public SkiDay(int id, String date, String conditions, String location, String runs, int vertical, String review) {
+            //public SkiDay(int id, String date, String conditions, String location, String runs, int vertical, String review) {
             while(rs.next()){
                 list.add(new SkiDay(
                         rs.getInt("id"),
@@ -43,14 +39,11 @@ public class SkiModel {
     }
 
 
-    public static int deleteEntryById(int id) {
+    public static void deleteEntryById(int id) throws SQLException {
         String deleteCMD = "DELETE FROM skiDays WHERE id = ?";
-        try(PreparedStatement statement = connection.prepareStatement(deleteCMD)) {
-            statement.setInt(1, id);
-            return statement.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        PreparedStatement statement = connection.prepareStatement(deleteCMD);
+        statement.setInt(1, id);
+        statement.executeUpdate();
     }
 
     public static void updateDay(int id, SkiDay d) throws SQLException {

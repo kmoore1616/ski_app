@@ -29,13 +29,12 @@ public class SkiDay{
         this.review = review;
     }
 
-   // public SkiDay(String date, String conditions, String location, String runs, int vertical, String review) {
+
     @Override
     public String toString(){
         return ("Date: "+getDate()+" Conditions: "+getConditions()+" Location: "+getLocation()
             +" Vertical Gain: "+getVertical()+ " \nRuns: "+getRuns())+" \nReview: "+getReview();
     }
-
 
     public int getId() {
         return id;

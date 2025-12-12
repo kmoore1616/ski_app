@@ -21,8 +21,11 @@ public class SummaryController {
         summaryView.setStats(total_days, total_vert);
     }
 
+    // Single Responsibility!
     private void updateContentArea(){
         String content = "";
+        total_vert = 0;
+        total_days = 0;
         for(SkiDay day : days){
             total_days++;
             total_vert += day.getVertical();

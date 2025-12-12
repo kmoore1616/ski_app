@@ -7,40 +7,65 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class SkiDayView {
-    private JFrame frame;
-    private JPanel button_panel, content_panel, main_panel, update_dialog_panel, ski_day_panel, update_action_panel;
-    private JPanel dialog_input_panel, dialog_action_panel;
-    private JButton enter_day, refresh, delete_entry_button, update_button;
-    private JButton print_page_button, submit_update_button, cancel_update_button;
-    private Image refresh_icon;
-    private JDialog entry_dialog, update_dialog;
-    private JTextField date_field, location_field, condition_field, avy_field, vertical_field;
-    private JTextField resort_field;
-    private JTextArea review_area, runs_area;
-    private JButton dialog_submit_button, dialog_cancel_button;
-    private JScrollPane runs_scroll, review_scroll, content_scroll;
-    private DefaultListModel<SkiDay> dayListModel;
-    private JList<SkiDay> dayList;
 
-    public SkiDayView(JFrame frame){
-        // Review GUI
+/*
+    Refactoring note: I'd like to refactor this class ST each of the dialogs are within their own classes
+    There is no reason for them to be here, it just bloats this class, and makes it difficult to find the
+    correct elements of each panel
+ */
+
+public class SkiDayView {
+    // --- Main Application Components ---
+    private JFrame frame;
+    private JDialog entry_dialog, update_dialog;
+
+    // --- Panels (Layout) ---
+    private JPanel main_panel, content_panel, button_panel, ski_day_panel;
+
+    // --- Entry/Update Dialog Components ---
+    private JPanel dialog_input_panel, dialog_action_panel, update_action_panel;
+
+    // --- Input Fields (Text) ---
+    private JTextField date_field, location_field, condition_field, vertical_field;
+
+    // --- Input Fields (Text Areas & Scrolling) ---
+    private JTextArea runs_area, review_area;
+    private JScrollPane runs_scroll, review_scroll;
+
+    // --- JList & Data Model ---
+    private JList<SkiDay> dayList;
+    private DefaultListModel<SkiDay> dayListModel;
+    private JScrollPane content_scroll;
+
+    // --- Action Buttons (Main Frame) ---
+    private JButton enter_day, refresh, delete_entry_button, update_button, print_page_button;
+
+    // --- Action Buttons (Dialogs) ---
+    private JButton dialog_submit_button, dialog_cancel_button, submit_update_button, cancel_update_button;
+
+    // --- Resources & Styling ---
+    private Image refresh_icon;
+    private Font content_font, button_font;
+
+
+
+    public SkiDayView(JFrame frame, Font content_font, Font button_font){
+        // Main Frame Components
         this.frame=frame;
-        button_panel = new JPanel();
-        content_panel = new JPanel();
-        main_panel = new JPanel();
-        enter_day = new JButton("Enter Day");
-        delete_entry_button = new JButton("Delete Entry");
         dayListModel = new DefaultListModel<>();
         dayList = new JList<>(dayListModel);
         content_scroll = new JScrollPane(dayList);
+        main_panel = new JPanel();
         ski_day_panel = new JPanel();
+        // Top panel
+        button_panel = new JPanel();
+        content_panel = new JPanel();
+        enter_day = new JButton("Enter Day");
+        delete_entry_button = new JButton("Delete Entry");
         update_button = new JButton("Update Entry");
-        submit_update_button = new JButton("Submit");
-        cancel_update_button = new JButton("Cancel");
-        update_action_panel = new JPanel();
-        dayList.setSelectedIndex(0);
-
+        // Style
+        this.button_font = button_font;
+        this.content_font = content_font;
         try{
             refresh_icon = ImageIO.read(getClass().getResource("resources/refresh.png"));
         } catch (IOException e) {
@@ -48,12 +73,16 @@ public class SkiDayView {
             refresh.setText("Refresh");
         }
 
+        submit_update_button = new JButton("Submit");
+        cancel_update_button = new JButton("Cancel");
+        update_action_panel = new JPanel();
+
+
         refresh = new JButton();
         print_page_button = new JButton("Print Page");
 
         // Update Dialog
         update_dialog = new JDialog(frame, "Update Ski Day", true);
-        update_dialog_panel = new JPanel();
 
         // Entry Dialog
         entry_dialog = new JDialog(frame, "Enter Ski Day", true);
@@ -72,9 +101,7 @@ public class SkiDayView {
         date_field = new JTextField(15);
         location_field  = new JTextField(15);
         condition_field = new JTextField(15);
-        avy_field       = new JTextField(15);
         vertical_field  = new JTextField(15);
-        resort_field    = new JTextField(15);
 
         // Text Areas
         review_area = new JTextArea(5, 20);
@@ -89,8 +116,10 @@ public class SkiDayView {
 
     }
 
+
+
     public void initUI(){
-        dayList.setFont(new Font("OpenSans", Font.PLAIN, 34));
+        initFonts();
 
         // Button Panel
         Border padding_border = BorderFactory.createEmptyBorder(5, 10, 5, 10);
@@ -109,18 +138,6 @@ public class SkiDayView {
         ));
 
 
-        // Focus dialog
-        /*focus_dialog.setLayout(new BorderLayout());
-        focus_area.setEditable(false);
-        focus_area.setFont(new Font("OpenSans", Font.PLAIN, 30));
-        focus_dialog_panel.setLayout(new BorderLayout());
-        focus_dialog_panel.add(focus_scroll);
-        focus_dialog.add(focus_dialog_panel);
-        focus_dialog.setLocationRelativeTo(frame);
-        focus_dialog.pack();
-
-         */
-
         // Content Panel
         dayList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         content_panel.setLayout(new BorderLayout());
@@ -133,20 +150,20 @@ public class SkiDayView {
 
         initDialog();
 
-
-
         ski_day_panel.setLayout(new BorderLayout());
         ski_day_panel.add(main_panel);
+    }
 
-
-
+    public void initFonts(){
+        dayList.setFont(content_font);
+        enter_day.setFont(button_font);
+        delete_entry_button.setFont(button_font);
+        update_button.setFont(button_font);
     }
 
     private void initDialog(){
-
         runs_area.setBorder(BorderFactory.createLineBorder(Color.black, 1));
         review_area.setBorder(BorderFactory.createLineBorder(Color.black, 1));
-
 
         //private JTextField date_field, location_field, condition_field, avy_field, vertical_field;
         dialog_input_panel.add(new JLabel("Date: "));
@@ -223,11 +240,9 @@ public class SkiDayView {
 
     public void clearEntryDialog(){
         date_field.setText("");
-        resort_field.setText("");
         runs_area.setText("");
         location_field.setText("");
         condition_field.setText("");
-        avy_field.setText("");
         vertical_field.setText("");
         review_area.setText("");
     }
@@ -280,8 +295,6 @@ public class SkiDayView {
     public JList<SkiDay> getDayList() {
         return dayList;
     }
-
-    //date field, resort_field, vertical_field, condition_field, runs_area, review_area
 
 
     public void setDate_field(String date) {
