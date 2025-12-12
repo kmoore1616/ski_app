@@ -22,6 +22,8 @@ public class SkiModel {
         try(Statement statement = connection.createStatement()){
             ResultSet rs = statement.executeQuery(getCMD);
 
+
+    //public SkiDay(int id, String date, String conditions, String location, String runs, int vertical, String review) {
             while(rs.next()){
                 list.add(new SkiDay(
                         rs.getInt("id"),
@@ -61,12 +63,15 @@ public class SkiModel {
         statement.setInt(4, d.getVertical());
         statement.setString(5, d.getReview());
         statement.setInt(6, id);
+        statement.executeUpdate();
 
     }
 
     public static void insertDay(SkiDay day) {
         String insertCMD = "INSERT INTO skiDays " +
-                "(date, location, conditions, runs, vertical, review) VALUES (?, ?, ?, ?, ?, ?)";
+                "(date, conditions, location, runs, vertical, review) VALUES (?, ?, ?, ?, ?, ?)";
+        //public SkiDay(String date, String conditions, String location, String runs, int vertical, String review) {
+
 
         try (PreparedStatement statement = connection.prepareStatement(insertCMD)) {
             statement.setString(1, day.getDate());

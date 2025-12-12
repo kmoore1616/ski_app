@@ -10,11 +10,7 @@ public class SkiDayController {
     static ArrayList<SkiDay> days = new ArrayList<>();
 
     private SkiDayView skiDayView;
-    private final int RESORT = 0;
-    private final int TOUR = 1;
-    private int selectedIndex;
     private int selectedDayId;
-
 
     public void updateSkiDays(){
         days.clear();
@@ -27,8 +23,6 @@ public class SkiDayController {
         skiDayView.addActionListenerEnterDay(new ActionListenerEnterDay());
         skiDayView.addActionListenerDialogSubmit(new ActionListenerSubmitDialog());
         skiDayView.addActionListenerDialogCancel(new ActionListenerCancelDialog());
-        skiDayView.addActionListenerResort(new ActionListenerResort());
-        skiDayView.addActionListenerTour(new ActionListenerTour());
         skiDayView.addActionListenerRefresh(new ActionListenerRefresh());
         skiDayView.addActionListenerPrintPage(new ActionListenerPrintPage());
         skiDayView.addActionListenerDeleteEntry(new ActionListenerDeleteEntry());
@@ -57,7 +51,6 @@ public class SkiDayController {
     }
 
     public class ActionListenerDeleteEntry implements ActionListener{
-
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
             if(SkiModel.deleteEntryById(selectedDayId) == 0){
@@ -67,7 +60,6 @@ public class SkiDayController {
                 skiDayView.updateContentArea(days);
                 skiDayView.deletePopup();
             }
-
         }
     }
 
@@ -75,7 +67,6 @@ public class SkiDayController {
 
 
     public class ActionListenerRefresh implements ActionListener{
-
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
             updateSkiDays();
@@ -86,7 +77,6 @@ public class SkiDayController {
     public class ActionListenerResort implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
-            skiDayView.switchPanel(RESORT);
         }
     }
 
@@ -94,7 +84,6 @@ public class SkiDayController {
     public class ActionListenerTour implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
-            skiDayView.switchPanel(TOUR);
         }
     }
 
@@ -134,9 +123,9 @@ public class SkiDayController {
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
             SkiDay temp = skiDayView.getDayList().getSelectedValue();
-            skiDayView.setDate_field(emp.getDate());
+            skiDayView.setDate_field(temp.getDate());
             skiDayView.setCondition_field(temp.getConditions());
-            skiDayView.setResort_field(temp.getLocation());
+            skiDayView.setLocation_field(temp.getLocation());
             skiDayView.setReview_area(temp.getReview());
             skiDayView.setVertical_field(String.valueOf(temp.getVertical()));
             skiDayView.setRuns_area(temp.getRuns());
@@ -145,6 +134,7 @@ public class SkiDayController {
     }
 
 
+    //public SkiDay(String date, String conditions, String location, String runs, int vertical, String review) {
     public class ActionListenerSubmitUpdate implements ActionListener{
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
@@ -152,9 +142,8 @@ public class SkiDayController {
                 SkiDay day = new SkiDay(
                         skiDayView.getDate_field(),
                         skiDayView.getCondition_field(),
-                        skiDayView.getResortField(),
+                        skiDayView.getLocation_field(),
                         skiDayView.getRunsArea(),
-
                         Integer.parseInt(skiDayView.getVertical_field()),
                         skiDayView.getReviewArea()
                 );
@@ -162,6 +151,7 @@ public class SkiDayController {
 
                 updateSkiDays();
                 skiDayView.updateContentArea(days);
+                skiDayView.updatePopup();
 
                 skiDayView.clearEntryDialog();
                 skiDayView.hideUpdateDialog();
@@ -182,7 +172,7 @@ public class SkiDayController {
                 SkiDay day = new SkiDay(
                         skiDayView.getDate_field(),
                         skiDayView.getCondition_field(),
-                        skiDayView.getResortField(),
+                        skiDayView.getLocation_field(),
                         skiDayView.getRunsArea(),
 
                         Integer.parseInt(skiDayView.getVertical_field()),

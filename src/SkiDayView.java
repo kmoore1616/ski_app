@@ -10,13 +10,11 @@ import java.util.ArrayList;
 public class SkiDayView {
     private JFrame frame;
     private JPanel button_panel, content_panel, main_panel, update_dialog_panel, ski_day_panel, update_action_panel;
-    private JPanel dialog_input_panel, dialog_action_panel, dialog_button_panel, dialog_resort_panel, dialog_tour_panel;
+    private JPanel dialog_input_panel, dialog_action_panel;
     private JButton enter_day, refresh, delete_entry_button, update_button;
     private JButton print_page_button, submit_update_button, cancel_update_button;
     private Image refresh_icon;
     private JDialog entry_dialog, update_dialog;
-    private JRadioButton resort_button, tour_button;
-    private ButtonGroup ski_day_type_group;
     private JTextField date_field, location_field, condition_field, avy_field, vertical_field;
     private JTextField resort_field;
     private JTextArea review_area, runs_area;
@@ -24,10 +22,6 @@ public class SkiDayView {
     private JScrollPane runs_scroll, review_scroll, content_scroll;
     private DefaultListModel<SkiDay> dayListModel;
     private JList<SkiDay> dayList;
-
-    private final int RESORT = 0;
-    private final int TOUR = 1;
-
 
     public SkiDayView(JFrame frame){
         // Review GUI
@@ -63,8 +57,6 @@ public class SkiDayView {
 
         // Entry Dialog
         entry_dialog = new JDialog(frame, "Enter Ski Day", true);
-        dialog_resort_panel = new JPanel();
-        dialog_tour_panel = new JPanel();
 
         // Buttons
         dialog_submit_button = new JButton("Submit");
@@ -73,13 +65,8 @@ public class SkiDayView {
         // Panels
         dialog_input_panel = new JPanel();
         dialog_action_panel = new JPanel();
-        dialog_button_panel = new JPanel();
 
         // Radio Buttons
-        resort_button = new JRadioButton("Resort Day");
-        resort_button.setSelected(true);
-        tour_button = new JRadioButton("Tour Day");
-        ski_day_type_group = new ButtonGroup();
 
         // Inputs
         date_field = new JTextField(15);
@@ -146,13 +133,6 @@ public class SkiDayView {
 
         initDialog();
 
-        update_action_panel.add(cancel_update_button);
-        update_action_panel.add(submit_update_button);
-        update_action_panel.setBorder(BorderFactory.createEmptyBorder(5, 10, 10, 10));
-        update_dialog.add(update_action_panel, BorderLayout.SOUTH);
-        update_dialog.add(dialog_resort_panel);
-        update_dialog.setLocationRelativeTo(frame);
-        update_dialog.pack();
 
 
         ski_day_panel.setLayout(new BorderLayout());
@@ -164,116 +144,41 @@ public class SkiDayView {
 
     private void initDialog(){
 
-        ski_day_type_group.add(resort_button);
-        ski_day_type_group.add(tour_button);
+        runs_area.setBorder(BorderFactory.createLineBorder(Color.black, 1));
+        review_area.setBorder(BorderFactory.createLineBorder(Color.black, 1));
 
-        dialog_button_panel.add(resort_button);
-        dialog_button_panel.add(tour_button);
-        dialog_button_panel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
 
-        // We call switchPanel here to populate the center area initially
-        switchPanel(RESORT);
+        //private JTextField date_field, location_field, condition_field, avy_field, vertical_field;
+        dialog_input_panel.add(new JLabel("Date: "));
+        dialog_input_panel.add(date_field);
+        dialog_input_panel.add(new JLabel("Conditions: "));
+        dialog_input_panel.add(condition_field);
+        dialog_input_panel.add(new JLabel("Location: "));
+        dialog_input_panel.add(location_field);
+        dialog_input_panel.add(new JLabel("Vertical Gain: "));
+        dialog_input_panel.add(vertical_field);
+        dialog_input_panel.add(new JLabel("Runs: "));
+        dialog_input_panel.add(runs_area);
+        dialog_input_panel.add(new JLabel("Review: "));
+        dialog_input_panel.add(review_area);
 
         dialog_action_panel.add(dialog_cancel_button);
         dialog_action_panel.add(dialog_submit_button);
         dialog_action_panel.setBorder(BorderFactory.createEmptyBorder(5, 10, 10, 10));
 
         entry_dialog.setLayout(new BorderLayout());
-        entry_dialog.add(dialog_button_panel, BorderLayout.NORTH);
-        entry_dialog.add(dialog_input_panel, BorderLayout.CENTER);
         entry_dialog.add(dialog_action_panel, BorderLayout.SOUTH);
 
-        entry_dialog.pack();
         entry_dialog.setLocationRelativeTo(frame);
+
+        update_action_panel.add(cancel_update_button);
+        update_action_panel.add(submit_update_button);
+        update_action_panel.setBorder(BorderFactory.createEmptyBorder(5, 10, 10, 10));
+        update_dialog.add(update_action_panel, BorderLayout.SOUTH);
+        update_dialog.setLocationRelativeTo(frame);
     }
 
     //
-    public void switchPanel(int selection){
-        dialog_input_panel.removeAll();
-
-        // Setup generic constraints
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5); // Padding between components
-        gbc.anchor = GridBagConstraints.WEST; // Left align components
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-
-        if(selection == RESORT) {
-            dialog_resort_panel.removeAll(); // Clear to re-add shared components (Date/Review)
-
-            gbc.gridx = 0; gbc.gridy = 0;
-            dialog_resort_panel.add(new JLabel("Date: "), gbc);
-            gbc.gridx = 1; gbc.weightx = 1.0;
-            dialog_resort_panel.add(date_field, gbc);
-
-            gbc.gridx = 0; gbc.gridy = 1; gbc.weightx = 0.0;
-            dialog_resort_panel.add(new JLabel("Resort: "), gbc);
-            gbc.gridx = 1; gbc.weightx = 1.0;
-            dialog_resort_panel.add(resort_field, gbc);
-
-            gbc.gridx = 0; gbc.gridy = 2; gbc.weightx = 0.0;
-            dialog_resort_panel.add(new JLabel("Vertical Gained:"), gbc);
-            gbc.gridx = 1; gbc.weightx = 1.0;
-            dialog_resort_panel.add(vertical_field, gbc);
-
-
-            gbc.gridx = 0; gbc.gridy = 3; gbc.weightx = 0.0;
-            dialog_resort_panel.add(new JLabel("Conditions: "), gbc);
-            gbc.gridx = 1; gbc.weightx = 1.0;
-            dialog_resort_panel.add(condition_field, gbc);
-
-            gbc.gridx = 0; gbc.gridy = 4; gbc.weightx = 0.0;
-            dialog_resort_panel.add(new JLabel("Runs: "), gbc);
-            gbc.gridx = 1; gbc.weightx = 1.0; gbc.fill = GridBagConstraints.BOTH; gbc.weighty = 1.0;
-            dialog_resort_panel.add(runs_scroll, gbc); // Add scroll pane, not area
-
-            gbc.gridx = 0; gbc.gridy = 5; gbc.weightx = 0.0; gbc.weighty = 0.0; gbc.fill = GridBagConstraints.HORIZONTAL;
-            dialog_resort_panel.add(new JLabel("Review of Day:"), gbc);
-            gbc.gridx = 1; gbc.weightx = 1.0; gbc.fill = GridBagConstraints.BOTH; gbc.weighty = 1.0;
-            dialog_resort_panel.add(review_scroll, gbc); // Add scroll pane
-
-            dialog_input_panel.add(dialog_resort_panel, BorderLayout.CENTER);
-
-        } else if(selection == TOUR){
-            dialog_tour_panel.removeAll(); // Clear to re-add shared components
-
-            gbc.gridx = 0; gbc.gridy = 0;
-            dialog_tour_panel.add(new JLabel("Date: "), gbc);
-            gbc.gridx = 1; gbc.weightx = 1.0;
-            dialog_tour_panel.add(date_field, gbc);
-
-            gbc.gridx = 0; gbc.gridy = 1; gbc.weightx = 0.0;
-            dialog_tour_panel.add(new JLabel("Location: "), gbc);
-            gbc.gridx = 1; gbc.weightx = 1.0;
-            dialog_tour_panel.add(location_field, gbc);
-
-            gbc.gridx = 0; gbc.gridy = 2; gbc.weightx = 0.0;
-            dialog_tour_panel.add(new JLabel("Vertical Gained:"), gbc);
-            gbc.gridx = 1; gbc.weightx = 1.0;
-            dialog_tour_panel.add(vertical_field, gbc);
-
-            gbc.gridx = 0; gbc.gridy = 3; gbc.weightx = 0.0;
-            dialog_tour_panel.add(new JLabel("Conditions: "), gbc);
-            gbc.gridx = 1; gbc.weightx = 1.0;
-            dialog_tour_panel.add(condition_field, gbc);
-
-            gbc.gridx = 0; gbc.gridy = 4; gbc.weightx = 0.0;
-            dialog_tour_panel.add(new JLabel("Runs: "), gbc);
-            gbc.gridx = 1; gbc.weightx = 1.0; gbc.fill = GridBagConstraints.BOTH; gbc.weighty = 1.0;
-            dialog_tour_panel.add(runs_scroll, gbc); // Add scroll pane, not area
-
-
-            gbc.gridx = 0; gbc.gridy = 5; gbc.weightx = 0.0;
-            dialog_tour_panel.add(new JLabel("Review of Day:"), gbc);
-            gbc.gridx = 1; gbc.weightx = 1.0; gbc.fill = GridBagConstraints.BOTH; gbc.weighty = 1.0;
-            dialog_tour_panel.add(review_scroll, gbc);
-
-            dialog_input_panel.add(dialog_tour_panel, BorderLayout.CENTER);
-        }
-
-        dialog_input_panel.revalidate();
-        dialog_input_panel.repaint();
-        entry_dialog.pack();
-    }
 
     /*
     public void switchPanel(int selection){
@@ -299,11 +204,17 @@ public class SkiDayView {
 
     public void entryPopup(){
         JOptionPane.showMessageDialog(null, "Entry Successfully Inserted!", "Message", JOptionPane.INFORMATION_MESSAGE);
+    }
 
+    public void updatePopup(){
+        JOptionPane.showMessageDialog(null, "Entry Successfully Updated!", "Message", JOptionPane.INFORMATION_MESSAGE);
     }
 
     public void showUpdateDialog(){
+        update_dialog.add(dialog_input_panel);
+        update_dialog.pack();
         update_dialog.setVisible(true);
+
     }
 
     public void hideUpdateDialog(){
@@ -319,8 +230,6 @@ public class SkiDayView {
         avy_field.setText("");
         vertical_field.setText("");
         review_area.setText("");
-        resort_button.setSelected(true);
-        switchPanel(RESORT);
     }
 
     //public SkiDay(int id, String date, String conditions, String location, String runs, int vertical, String review) {
@@ -336,6 +245,9 @@ public class SkiDayView {
     }
 
     public void showEntryDialog(){
+        clearEntryDialog();
+        entry_dialog.add(dialog_input_panel, BorderLayout.CENTER);
+        entry_dialog.pack();
         entry_dialog.setVisible(true);
     }
 
@@ -357,10 +269,6 @@ public class SkiDayView {
 
     public String getVertical_field() {return vertical_field.getText();}
 
-    public String getResortField() {
-        return resort_field.getText();
-    }
-
     public String getReviewArea() {
         return review_area.getText();
     }
@@ -380,8 +288,8 @@ public class SkiDayView {
         this.date_field.setText(date);
     }
 
-    public void setResort_field(String location) {
-        this.resort_field.setText(location);
+    public void setLocation_field(String location) {
+        this.location_field.setText(location);
     }
 
     public void setVertical_field(String vertical) {
@@ -407,8 +315,6 @@ public class SkiDayView {
     public void addActionListenerRefresh(ActionListener actionListener){refresh.addActionListener(actionListener);}
     public void addActionListenerDialogSubmit(ActionListener actionListener){dialog_submit_button.addActionListener(actionListener);}
     public void addActionListenerDialogCancel(ActionListener actionListener) {dialog_cancel_button.addActionListener(actionListener);}
-    public void addActionListenerResort(ActionListener actionListener){resort_button.addActionListener(actionListener);}
-    public void addActionListenerTour(ActionListener actionListener){tour_button.addActionListener(actionListener);}
     public void addActionListenerPrintPage(ActionListener actionListener){print_page_button.addActionListener(actionListener);}
     public void addActionListenerCancelUpdate(ActionListener actionListener){cancel_update_button.addActionListener(actionListener);}
     public void addActionListenerSubmitUpdate(ActionListener actionListener){submit_update_button.addActionListener(actionListener);}
