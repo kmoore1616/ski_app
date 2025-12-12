@@ -95,7 +95,6 @@ public class SkiDayView {
         dialog_input_panel = new JPanel();
         dialog_action_panel = new JPanel();
 
-        // Radio Buttons
 
         // Inputs
         date_field = new JTextField(15);
@@ -197,18 +196,6 @@ public class SkiDayView {
 
     //
 
-    /*
-    public void switchPanel(int selection){
-       dialog_input_panel.removeAll();
-       if(selection == RESORT) {
-           dialog_input_panel.add(dialog_resort_panel);
-       }else if(selection == TOUR){
-           dialog_input_panel.add(dialog_tour_panel);
-       }
-       dialog_input_panel.revalidate();
-       dialog_input_panel.repaint();
-    }
-    */
 
     public void errorPopup(){
         JOptionPane.showMessageDialog(null, "Something went wrong, double check your submission...",
@@ -255,9 +242,6 @@ public class SkiDayView {
         }
     }
 
-    public JPanel getSki_day_panel() {
-        return ski_day_panel;
-    }
 
     public void showEntryDialog(){
         clearEntryDialog();
@@ -274,6 +258,9 @@ public class SkiDayView {
         return date_field.getText();
     }
 
+    public JPanel getSki_day_panel() {
+        return ski_day_panel;
+    }
     public String getLocation_field() {
         return location_field.getText();
     }
