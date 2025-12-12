@@ -1,6 +1,7 @@
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.Border;
+import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -8,44 +9,43 @@ import java.util.ArrayList;
 
 public class SkiDayView {
     private JFrame frame;
-    private JPanel toolbar_panel, button_panel, content_panel, main_panel, delete_entry_panel;
-    private JTextArea content_area;
-    private JButton enter_day, refresh, ski_day_button, summary_button, forecast_button, delete_entry_button;
-    private JButton delete_cancel, delete_inner_button, print_page_button;
-    private Image refresh_icon;
-    private JDialog entry_dialog, delete_dialog;
+    private JPanel button_panel, content_panel, main_panel, update_dialog_panel, ski_day_panel, update_action_panel;
     private JPanel dialog_input_panel, dialog_action_panel, dialog_button_panel, dialog_resort_panel, dialog_tour_panel;
+    private JButton enter_day, refresh, delete_entry_button, update_button;
+    private JButton print_page_button, submit_update_button, cancel_update_button;
+    private Image refresh_icon;
+    private JDialog entry_dialog, update_dialog;
     private JRadioButton resort_button, tour_button;
     private ButtonGroup ski_day_type_group;
     private JTextField date_field, location_field, condition_field, avy_field, vertical_field;
-    private JTextField resort_field, delete_entry;
+    private JTextField resort_field;
     private JTextArea review_area, runs_area;
     private JButton dialog_submit_button, dialog_cancel_button;
     private JScrollPane runs_scroll, review_scroll, content_scroll;
+    private DefaultListModel<SkiDay> dayListModel;
+    private JList<SkiDay> dayList;
 
     private final int RESORT = 0;
     private final int TOUR = 1;
 
 
-    public SkiDayView(){
+    public SkiDayView(JFrame frame){
         // Review GUI
-        frame = new JFrame();
-        toolbar_panel = new JPanel();
+        this.frame=frame;
         button_panel = new JPanel();
         content_panel = new JPanel();
         main_panel = new JPanel();
-        content_area = new JTextArea(1, 1);
         enter_day = new JButton("Enter Day");
-        content_scroll = new JScrollPane(content_area);
-
-
-        // Delete
-        delete_dialog = new JDialog(frame, "Delete Entry", true);
         delete_entry_button = new JButton("Delete Entry");
-        delete_entry_panel = new JPanel();
-        delete_entry = new JTextField(5);
-        delete_inner_button = new JButton("Delete");
-        delete_cancel = new JButton("Cancel");
+        dayListModel = new DefaultListModel<>();
+        dayList = new JList<>(dayListModel);
+        content_scroll = new JScrollPane(dayList);
+        ski_day_panel = new JPanel();
+        update_button = new JButton("Update Entry");
+        submit_update_button = new JButton("Submit");
+        cancel_update_button = new JButton("Cancel");
+        update_action_panel = new JPanel();
+        dayList.setSelectedIndex(0);
 
         try{
             refresh_icon = ImageIO.read(getClass().getResource("resources/refresh.png"));
@@ -55,12 +55,13 @@ public class SkiDayView {
         }
 
         refresh = new JButton();
-        ski_day_button = new JButton("Ski Day");
-        summary_button = new JButton("Summary");
-        forecast_button = new JButton("Forecast");
         print_page_button = new JButton("Print Page");
 
-        // Dialog
+        // Update Dialog
+        update_dialog = new JDialog(frame, "Update Ski Day", true);
+        update_dialog_panel = new JPanel();
+
+        // Entry Dialog
         entry_dialog = new JDialog(frame, "Enter Ski Day", true);
         dialog_resort_panel = new JPanel();
         dialog_tour_panel = new JPanel();
@@ -98,18 +99,11 @@ public class SkiDayView {
         runs_area.setLineWrap(true);
         runs_area.setWrapStyleWord(true);
         runs_scroll = new JScrollPane(runs_area);
+
     }
 
     public void initUI(){
-
-        // Toolbar panel
-        toolbar_panel.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 5));
-        toolbar_panel.add(ski_day_button);
-        toolbar_panel.add(summary_button);
-        toolbar_panel.add(forecast_button);
-        toolbar_panel.add(print_page_button);
-
-        toolbar_panel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.BLACK));
+        dayList.setFont(new Font("OpenSans", Font.PLAIN, 34));
 
         // Button Panel
         Border padding_border = BorderFactory.createEmptyBorder(5, 10, 5, 10);
@@ -120,6 +114,7 @@ public class SkiDayView {
         }
         button_panel.add(enter_day);
         button_panel.add(delete_entry_button);
+        button_panel.add(update_button);
         button_panel.add(refresh);
         button_panel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createMatteBorder(0, 0, 1, 0, Color.BLACK), // Bottom line
@@ -127,9 +122,20 @@ public class SkiDayView {
         ));
 
 
+        // Focus dialog
+        /*focus_dialog.setLayout(new BorderLayout());
+        focus_area.setEditable(false);
+        focus_area.setFont(new Font("OpenSans", Font.PLAIN, 30));
+        focus_dialog_panel.setLayout(new BorderLayout());
+        focus_dialog_panel.add(focus_scroll);
+        focus_dialog.add(focus_dialog_panel);
+        focus_dialog.setLocationRelativeTo(frame);
+        focus_dialog.pack();
+
+         */
+
         // Content Panel
-        content_area.setEditable(false);
-        content_area.setFont(new Font("OpenSans", Font.PLAIN, 24));
+        dayList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         content_panel.setLayout(new BorderLayout());
         content_panel.add(content_scroll);
 
@@ -138,27 +144,25 @@ public class SkiDayView {
         main_panel.add(button_panel, BorderLayout.NORTH);
         main_panel.add(content_panel);
 
-        frame.setLayout(new BorderLayout());
-        frame.add(toolbar_panel, BorderLayout.NORTH);
-        frame.add(main_panel);
-
         initDialog();
 
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(800, 600);
-        frame.setVisible(true);
+        update_action_panel.add(cancel_update_button);
+        update_action_panel.add(submit_update_button);
+        update_action_panel.setBorder(BorderFactory.createEmptyBorder(5, 10, 10, 10));
+        update_dialog.add(update_action_panel, BorderLayout.SOUTH);
+        update_dialog.add(dialog_resort_panel);
+        update_dialog.setLocationRelativeTo(frame);
+        update_dialog.pack();
+
+
+        ski_day_panel.setLayout(new BorderLayout());
+        ski_day_panel.add(main_panel);
+
+
+
     }
 
     private void initDialog(){
-        delete_dialog.setLayout(new BorderLayout());
-        delete_entry_panel.add(new JLabel("Enter ID of entry to delete: "));
-        delete_entry_panel.add(delete_entry);
-        delete_entry_panel.add(delete_inner_button);
-        delete_entry_panel.add(delete_cancel);
-        delete_dialog.add(delete_entry_panel);
-        delete_dialog.setLocationRelativeTo(frame);
-        delete_dialog.pack();
-
 
         ski_day_type_group.add(resort_button);
         ski_day_type_group.add(tour_button);
@@ -298,8 +302,12 @@ public class SkiDayView {
 
     }
 
-    public void clearDeleteDialog(){
-        delete_entry.setText("");
+    public void showUpdateDialog(){
+        update_dialog.setVisible(true);
+    }
+
+    public void hideUpdateDialog(){
+        update_dialog.setVisible(false);
     }
 
     public void clearEntryDialog(){
@@ -317,27 +325,14 @@ public class SkiDayView {
 
     //public SkiDay(int id, String date, String conditions, String location, String runs, int vertical, String review) {
     public void updateContentArea(ArrayList<SkiDay> days){
-        String content = "";
-        for(SkiDay day : days){
-            String id = String.valueOf(day.getId());
-            String date = day.getDate();
-            String conditions = day.getConditions();
-            String location = day.getLocation();
-            String runs = day.getRuns();
-            String vertical = String.valueOf(day.getVertical());
-            String reveiw = day.getReview();
-            content += ("ID: " +id+ " Date: " + date + " Conditions: " + conditions + " Location: " + location + " Vertical: "
-                    + vertical+ "\nRuns: " + runs + "\nReview: " + reveiw + "\n\n");
-
+        dayListModel.clear();
+        for(int i=0; i<days.size(); i++){
+            dayListModel.add(i, days.get(i));
         }
-        content_area.setText(content);
     }
 
-    public void showDeleteDialog(){
-        delete_dialog.setVisible(true);
-    }
-    public void hideDeleteDialog(){
-        delete_dialog.setVisible(false);
+    public JPanel getSki_day_panel() {
+        return ski_day_panel;
     }
 
     public void showEntryDialog(){
@@ -374,21 +369,47 @@ public class SkiDayView {
         return runs_area.getText();
     }
 
-    public String getDelete_entry() {
-        return delete_entry.getText();
+    public JList<SkiDay> getDayList() {
+        return dayList;
     }
 
+    //date field, resort_field, vertical_field, condition_field, runs_area, review_area
+
+
+    public void setDate_field(String date) {
+        this.date_field.setText(date);
+    }
+
+    public void setResort_field(String location) {
+        this.resort_field.setText(location);
+    }
+
+    public void setVertical_field(String vertical) {
+        this.vertical_field.setText(vertical);
+    }
+
+    public void setCondition_field(String condition) {
+        this.condition_field.setText(condition);
+    }
+
+    public void setRuns_area(String runs) {
+        this.runs_area.setText(runs);
+    }
+
+    public void setReview_area(String review) {
+        this.review_area.setText(review);
+    }
+
+    public void addListListenerDayList(ListSelectionListener listener){dayList.addListSelectionListener(listener);}
     public void addActionListenerDeleteEntry(ActionListener actionListener){delete_entry_button.addActionListener(actionListener);}
-    public void addActionListenerCancelDelete(ActionListener actionListener){delete_cancel.addActionListener(actionListener);}
-    public void addActionListenerSubmitDelete(ActionListener actionListener){delete_inner_button.addActionListener(actionListener);}
     public void addActionListenerEnterDay(ActionListener actionListener){enter_day.addActionListener(actionListener);}
+    public void addActionListenerUpdateEntry(ActionListener actionListener){update_button.addActionListener(actionListener);}
     public void addActionListenerRefresh(ActionListener actionListener){refresh.addActionListener(actionListener);}
-    public void addActionListenerSkiDay(ActionListener actionListener){ski_day_button.addActionListener(actionListener);}
-    public void addActionListenerSummary(ActionListener actionListener){summary_button.addActionListener(actionListener);}
-    public void addActionListenerForecast(ActionListener actionListener){forecast_button.addActionListener(actionListener);}
     public void addActionListenerDialogSubmit(ActionListener actionListener){dialog_submit_button.addActionListener(actionListener);}
     public void addActionListenerDialogCancel(ActionListener actionListener) {dialog_cancel_button.addActionListener(actionListener);}
     public void addActionListenerResort(ActionListener actionListener){resort_button.addActionListener(actionListener);}
     public void addActionListenerTour(ActionListener actionListener){tour_button.addActionListener(actionListener);}
     public void addActionListenerPrintPage(ActionListener actionListener){print_page_button.addActionListener(actionListener);}
+    public void addActionListenerCancelUpdate(ActionListener actionListener){cancel_update_button.addActionListener(actionListener);}
+    public void addActionListenerSubmitUpdate(ActionListener actionListener){submit_update_button.addActionListener(actionListener);}
 }

@@ -29,10 +29,8 @@
 
 public class Main {
     public static void main(String[] args){
-        SkiDayView view = new SkiDayView();
-        view.initUI();
+        MasterView masterView = new MasterView();
 
-        SkiDayController controller = new SkiDayController(view);
 
     }
 }

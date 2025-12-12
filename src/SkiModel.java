@@ -1,4 +1,3 @@
-import javax.swing.*;
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -15,7 +14,8 @@ public class SkiModel {
     }
 
 
-    public static ArrayList<SkiDay> getAllDays(int dayType){
+
+    public static ArrayList<SkiDay> getAllDays(){
         ArrayList<SkiDay> list = new ArrayList<>();
         String getCMD = "SELECT id, date, conditions, location, runs, vertical, review FROM skiDays";
 
@@ -40,11 +40,28 @@ public class SkiModel {
         return list;
     }
 
-    public static int deleteEntryById(int id) throws SQLException{
+
+    public static int deleteEntryById(int id) {
         String deleteCMD = "DELETE FROM skiDays WHERE id = ?";
-        PreparedStatement statement = connection.prepareStatement(deleteCMD);
-        statement.setInt(1, id);
-        return statement.executeUpdate();
+        try(PreparedStatement statement = connection.prepareStatement(deleteCMD)) {
+            statement.setInt(1, id);
+            return statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void updateDay(int id, SkiDay d) throws SQLException {
+        String updateCMD = "UPDATE skiDays SET date = ?, location = ?, runs=?, vertical=?, review=? WHERE id=?";
+
+        PreparedStatement statement = connection.prepareStatement(updateCMD);
+        statement.setString(1, d.getDate());
+        statement.setString(2, d.getLocation());
+        statement.setString(3, d.getRuns());
+        statement.setInt(4, d.getVertical());
+        statement.setString(5, d.getReview());
+        statement.setInt(6, id);
+
     }
 
     public static void insertDay(SkiDay day) {
