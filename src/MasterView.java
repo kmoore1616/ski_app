@@ -11,6 +11,8 @@ import java.io.IOException;
 
  */
 public class MasterView {
+    private final boolean LOGIN_ENABLED = true;
+
     private JFrame main_frame, login_frame;
     private JTabbedPane tabs;
 
@@ -27,11 +29,13 @@ public class MasterView {
 
         tabs = new JTabbedPane();
 
-        //LoginView loginView = new LoginView(login_frame);
-        //loginView.initUI();
-        //LoginController loginController= new LoginController(loginView, this::loginSuccess);
+        if(LOGIN_ENABLED) {
+            LoginView loginView = new LoginView(login_frame);
+            loginView.initUI();
+            LoginController loginController= new LoginController(loginView, this::loginSuccess);
 
-        //login_frame.add(loginView.getLoginPanel());
+            login_frame.add(loginView.getLoginPanel());
+        }
 
         SkiDayView skiDayView = new SkiDayView(main_frame, content_font, button_font); // I needed to pass frame as the dialogs needed a reference
         skiDayView.initUI();
@@ -57,10 +61,13 @@ public class MasterView {
            }
        });
 
-        login_frame.setSize(600, 200);
-        login_frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        //login_frame.setVisible(true);
-        loginSuccess();
+        if(LOGIN_ENABLED) {
+            login_frame.setSize(600, 200);
+            login_frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            login_frame.setVisible(true);
+        }else{
+            loginSuccess();
+        }
 
     }
 

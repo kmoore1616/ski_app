@@ -64,6 +64,7 @@ public class SummaryController {
                 byte[] writeArray = String.valueOf(output).getBytes(StandardCharsets.UTF_8);
                 fos.write(writeArray);
                 System.out.println("File Written Successfully");
+                summaryView.showPrintDialog();
             }catch (IOException e){
                 System.out.println("Error on file write");
 
