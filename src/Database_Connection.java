@@ -3,7 +3,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class Database_Connection {
-    private static final String URI = "jdbc:sqlite:ski.db";
+    private static final String URI = "jdbc:sqlite:database.db";
     private static Connection connection;
 
     public static Connection getConnection() throws SQLException {

@@ -1,4 +1,3 @@
-import javax.swing.*;
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -21,7 +20,7 @@ public class SkiModel {
 
         try(Statement statement = connection.createStatement()){
             ResultSet rs = statement.executeQuery(getCMD);
-
+            //public SkiDay(int id, String date, String conditions, String location, String runs, int vertical, String review) {
             while(rs.next()){
                 list.add(new SkiDay(
                         rs.getInt("id"),
@@ -40,16 +39,33 @@ public class SkiModel {
         return list;
     }
 
-    public static int deleteEntryById(int id) throws SQLException{
+
+    public static void deleteEntryById(int id) throws SQLException {
         String deleteCMD = "DELETE FROM skiDays WHERE id = ?";
         PreparedStatement statement = connection.prepareStatement(deleteCMD);
         statement.setInt(1, id);
-        return statement.executeUpdate();
+        statement.executeUpdate();
+    }
+
+    public static void updateDay(int id, SkiDay d) throws SQLException {
+        String updateCMD = "UPDATE skiDays SET date = ?, location = ?, runs=?, vertical=?, review=? WHERE id=?";
+
+        PreparedStatement statement = connection.prepareStatement(updateCMD);
+        statement.setString(1, d.getDate());
+        statement.setString(2, d.getLocation());
+        statement.setString(3, d.getRuns());
+        statement.setInt(4, d.getVertical());
+        statement.setString(5, d.getReview());
+        statement.setInt(6, id);
+        statement.executeUpdate();
+
     }
 
     public static void insertDay(SkiDay day) {
         String insertCMD = "INSERT INTO skiDays " +
-                "(date, location, conditions, runs, vertical, review) VALUES (?, ?, ?, ?, ?, ?)";
+                "(date, conditions, location, runs, vertical, review) VALUES (?, ?, ?, ?, ?, ?)";
+        //public SkiDay(String date, String conditions, String location, String runs, int vertical, String review) {
+
 
         try (PreparedStatement statement = connection.prepareStatement(insertCMD)) {
             statement.setString(1, day.getDate());

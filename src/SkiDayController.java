@@ -1,82 +1,71 @@
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class SkiDayController {
-    static ArrayList<SkiDay> days = new ArrayList<>();
+    private static ArrayList<SkiDay> days = new ArrayList<>();
 
     private SkiDayView skiDayView;
-    private SkiModel skiModel;
-    private final int RESORT = 0;
-    private final int TOUR = 1;
+    private int selectedDayId;
 
-    private int current_selection = RESORT;
-
-    private void updateSkiDays(){
+    public void updateSkiDays(){
         days.clear();
         days = SkiModel.getAllDays();
     }
 
     public SkiDayController(SkiDayView skiDayView) {
         this.skiDayView = skiDayView;
-        skiModel = new SkiModel();
+        new SkiModel(); // Run constructor
         skiDayView.addActionListenerEnterDay(new ActionListenerEnterDay());
         skiDayView.addActionListenerDialogSubmit(new ActionListenerSubmitDialog());
         skiDayView.addActionListenerDialogCancel(new ActionListenerCancelDialog());
-        skiDayView.addActionListenerResort(new ActionListenerResort());
-        skiDayView.addActionListenerTour(new ActionListenerTour());
         skiDayView.addActionListenerRefresh(new ActionListenerRefresh());
-        skiDayView.addActionListenerDeleteEntry(new ActionListenerDeleteEntry());
-        skiDayView.addActionListenerSubmitDelete(new ActionListenerSubmitDelete());
-        skiDayView.addActionListenerCancelDelete(new ActionListenerCancelDelete());
-        skiDayView.addActionListenerSkiDay(new ActionListenerSkiDay());
-        skiDayView.addActionListenerSummary(new ActionListenerSummary());
-        skiDayView.addActionListenerForecast(new ActionListenerForecast());
         skiDayView.addActionListenerPrintPage(new ActionListenerPrintPage());
-        updateSkiDays();
+        skiDayView.addActionListenerDeleteEntry(new ActionListenerDeleteEntry());
+        skiDayView.addListListenerDayList(new listListenerDay());
+        skiDayView.addActionListenerUpdateEntry(new ActionListenerUpdateEntry());
+        skiDayView.addActionListenerCancelUpdate(new ActionListenerCancelUpdate());
+        skiDayView.addActionListenerSubmitUpdate(new ActionListenerSubmitUpdate());
 
+        updateSkiDays();
         skiDayView.updateContentArea(days);
     }
 
+    public class listListenerDay implements ListSelectionListener{
+        @Override
+        public void valueChanged(ListSelectionEvent listSelectionEvent) {
+            SkiDay tempday = null;
+            if(!listSelectionEvent.getValueIsAdjusting()){
+                tempday = skiDayView.getDayList().getSelectedValue();
+                if(tempday != null){
+                    selectedDayId = tempday.getId();
+                }
+            }
+
+        }
+    }
+
     public class ActionListenerDeleteEntry implements ActionListener{
-
-        @Override
-        public void actionPerformed(ActionEvent actionEvent) {
-            skiDayView.showDeleteDialog();
-        }
-    }
-
-    public class ActionListenerCancelDelete implements ActionListener{
-
-        @Override
-        public void actionPerformed(ActionEvent actionEvent) {
-            skiDayView.hideDeleteDialog();
-            skiDayView.clearDeleteDialog();
-        }
-    }
-
-    public class ActionListenerSubmitDelete implements ActionListener{
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
             try {
-                if(SkiModel.deleteEntryById(Integer.parseInt(skiDayView.getDelete_entry())) == 0){
-                    skiDayView.errorPopup();
-                }else{
-
-                    skiDayView.deletePopup();
-                    updateSkiDays();
-                    skiDayView.updateContentArea(days);
-                }
-            } catch (SQLException | NumberFormatException e) {
+                SkiModel.deleteEntryById(selectedDayId);
+                updateSkiDays();
+                skiDayView.updateContentArea(days);
+                skiDayView.deletePopup();
+            } catch (RuntimeException|SQLException e) {
                 skiDayView.errorPopup();
                 throw new RuntimeException(e);
             }
         }
     }
 
+    // This is almost useless, but its implemented so why not
     public class ActionListenerRefresh implements ActionListener{
-
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
             updateSkiDays();
@@ -84,20 +73,17 @@ public class SkiDayController {
         }
     }
 
+    @Deprecated // Dont know if this is the correct convention, but I want to keep these around in case I build out tour/resort days
     public class ActionListenerResort implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
-            skiDayView.switchPanel(RESORT);
-            current_selection = RESORT;
         }
     }
 
-
+    @Deprecated
     public class ActionListenerTour implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
-            skiDayView.switchPanel(TOUR);
-            current_selection = TOUR;
         }
     }
 
@@ -115,26 +101,7 @@ public class SkiDayController {
         }
     }
 
-    public class ActionListenerSkiDay implements ActionListener{
-        @Override
-        public void actionPerformed(ActionEvent actionEvent) {
-
-        }
-    }
-    public class ActionListenerSummary implements ActionListener{
-        @Override
-        public void actionPerformed(ActionEvent actionEvent) {
-
-        }
-    }
-
-    public class ActionListenerForecast implements ActionListener{
-        @Override
-        public void actionPerformed(ActionEvent actionEvent) {
-
-        }
-    }
-
+    // TODO
     public class ActionListenerPrintPage implements ActionListener{
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
@@ -143,6 +110,60 @@ public class SkiDayController {
         }
     }
 
+    public class ActionListenerCancelUpdate implements ActionListener{
+        @Override
+        public void actionPerformed(ActionEvent actionEvent) {
+            skiDayView.clearEntryDialog();
+            skiDayView.hideUpdateDialog();
+
+        }
+    }
+
+    public class ActionListenerUpdateEntry implements ActionListener{
+        @Override
+        public void actionPerformed(ActionEvent actionEvent) {
+            SkiDay temp = skiDayView.getDayList().getSelectedValue();
+            skiDayView.setDate_field(temp.getDate());
+            skiDayView.setCondition_field(temp.getConditions());
+            skiDayView.setLocation_field(temp.getLocation());
+            skiDayView.setReview_area(temp.getReview());
+            skiDayView.setVertical_field(String.valueOf(temp.getVertical()));
+            skiDayView.setRuns_area(temp.getRuns());
+            skiDayView.showUpdateDialog();
+        }
+    }
+
+
+    //public SkiDay(String date, String conditions, String location, String runs, int vertical, String review) {
+    public class ActionListenerSubmitUpdate implements ActionListener{
+        @Override
+        public void actionPerformed(ActionEvent actionEvent) {
+            try {
+                SkiDay day = new SkiDay(
+                        skiDayView.getDate_field(),
+                        skiDayView.getCondition_field(),
+                        skiDayView.getLocation_field(),
+                        skiDayView.getRunsArea(),
+                        Integer.parseInt(skiDayView.getVertical_field()),
+                        skiDayView.getReviewArea()
+                );
+                SkiModel.updateDay(skiDayView.getDayList().getSelectedValue().getId(), day);
+
+                updateSkiDays();
+                skiDayView.updateContentArea(days);
+                skiDayView.updatePopup();
+
+                skiDayView.hideUpdateDialog();
+            } catch (RuntimeException |SQLException e) {
+                skiDayView.errorPopup();
+                throw new RuntimeException(e);
+            }
+
+        }
+    }
+
+
+
     public class ActionListenerSubmitDialog implements ActionListener{
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
@@ -150,7 +171,7 @@ public class SkiDayController {
                 SkiDay day = new SkiDay(
                         skiDayView.getDate_field(),
                         skiDayView.getCondition_field(),
-                        skiDayView.getResortField(),
+                        skiDayView.getLocation_field(),
                         skiDayView.getRunsArea(),
 
                         Integer.parseInt(skiDayView.getVertical_field()),
@@ -161,7 +182,6 @@ public class SkiDayController {
                 updateSkiDays();
                 skiDayView.updateContentArea(days);
 
-                skiDayView.clearEntryDialog();
                 skiDayView.hideEntryDialog();
             } catch (RuntimeException e) {
                 skiDayView.errorPopup();
