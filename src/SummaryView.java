@@ -1,6 +1,7 @@
 import javax.swing.*;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
+import java.awt.event.ActionListener;
 
 public class SummaryView {
     private JPanel summary_panel, filter_panel, stats_panel, button_panel;
@@ -8,9 +9,12 @@ public class SummaryView {
     private JLabel vertical_label, stats;
     private JScrollPane content_scroll;
     private JTextArea content_area;
+    private JButton print_button;
+    private JDialog print_dialog;
     private Font content_font, button_font;
+    private JLabel print_label;
 
-    public SummaryView(Font content_font, Font button_font){
+    public SummaryView(JFrame frame, Font content_font, Font button_font){
         summary_panel = new JPanel();
         stats_panel = new JPanel();
         filter_panel = new JPanel();
@@ -19,8 +23,12 @@ public class SummaryView {
         content_scroll = new JScrollPane(content_area);
         stats = new JLabel();
         vertical_label = new JLabel();
+        print_button = new JButton("Print");
         this.content_font = content_font;
         this.button_font = button_font;
+        print_dialog = new JDialog(frame, "Print", true);
+        print_label = new JLabel("Page printed to csv");
+        print_button = new JButton("Print Page");
 
     }
 
@@ -49,9 +57,21 @@ public class SummaryView {
         filter_panel.add(vertical_label);
         summary_panel.add(filter_panel, BorderLayout.EAST);
 
+        print_button.setFont(button_font);
+
         stats_panel.add(stats);
+        stats_panel.add(print_button, BorderLayout.EAST);
         summary_panel.add(stats_panel, BorderLayout.NORTH);
 
+        print_label.setFont(content_font);
+        print_dialog.add(print_label);
+        print_dialog.pack();
+    }
+
+
+
+    public void showPrintDialog(){
+        print_dialog.setVisible(true);
     }
 
     public JPanel getSummary_panel() {
@@ -76,6 +96,7 @@ public class SummaryView {
         content_area.setText(content);
     }
 
+    public void addActionListenerPrint(ActionListener listener){print_button.addActionListener(listener);}
     public void addChangeListenerVerticalSlider(ChangeListener listener){vertical_slider.addChangeListener(listener);}
 
 }

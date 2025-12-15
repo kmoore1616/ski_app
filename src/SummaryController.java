@@ -1,5 +1,10 @@
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 public class SummaryController {
@@ -10,7 +15,8 @@ public class SummaryController {
 
     public SummaryController(SummaryView summaryView){
         this.summaryView=summaryView;
-        summaryView.addChangeListenerVerticalSlider(new changeListenerVerticalSlider());
+        summaryView.addChangeListenerVerticalSlider(new ChangeListenerVerticalSlider());
+        summaryView.addActionListenerPrint(new ActionListenerPrint());
         updateDays();
     }
 
@@ -39,7 +45,34 @@ public class SummaryController {
 
     }
 
-    public class changeListenerVerticalSlider implements ChangeListener{
+    // https://www.geeksforgeeks.org/java/fileoutputstream-in-java/
+    public class ActionListenerPrint implements ActionListener{
+        @Override
+        public void actionPerformed(ActionEvent actionEvent) {
+            try (FileOutputStream fos = new FileOutputStream("summary.tsv")){
+                StringBuilder output = new StringBuilder();
+                output.append("Date\tConditions\tLocation\tVertical\tRuns\tReview\n");
+                for(SkiDay day : days){
+                    output.append(day.getDate().strip() + "\t");
+                    output.append(day.getConditions().strip() + "\t");
+                    output.append(day.getLocation().strip() + "\t");
+                    output.append(day.getVertical() + "\t");
+                    output.append(day.getRuns().strip().replace('\n', ' ') + "\t");
+                    output.append(day.getReview().strip().replace('\n', ' ') + "\n");
+                }
+                // https://www.geeksforgeeks.org/java/convert-string-to-byte-array-in-java-using-getbytescharset-method/
+                byte[] writeArray = String.valueOf(output).getBytes(StandardCharsets.UTF_8);
+                fos.write(writeArray);
+                System.out.println("File Written Successfully");
+            }catch (IOException e){
+                System.out.println("Error on file write");
+
+            }
+
+        }
+    }
+
+    public class ChangeListenerVerticalSlider implements ChangeListener{
         @Override
         public void stateChanged(ChangeEvent changeEvent) {
             summaryView.setVerticalLabel(summaryView.getVertical_slider());

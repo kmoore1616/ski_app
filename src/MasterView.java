@@ -27,17 +27,17 @@ public class MasterView {
 
         tabs = new JTabbedPane();
 
-        LoginView loginView = new LoginView(login_frame);
-        loginView.initUI();
-        LoginController loginController= new LoginController(loginView, this::loginSuccess);
+        //LoginView loginView = new LoginView(login_frame);
+        //loginView.initUI();
+        //LoginController loginController= new LoginController(loginView, this::loginSuccess);
 
-        login_frame.add(loginView.getLoginPanel());
+        //login_frame.add(loginView.getLoginPanel());
 
         SkiDayView skiDayView = new SkiDayView(main_frame, content_font, button_font); // I needed to pass frame as the dialogs needed a reference
         skiDayView.initUI();
         JPanel ski_day_panel = skiDayView.getSki_day_panel();
 
-        SummaryView summaryView = new SummaryView(content_font, button_font);
+        SummaryView summaryView = new SummaryView(main_frame, content_font, button_font);
         summaryView.initUI();
         JPanel summary_panel = summaryView.getSummary_panel();
 
@@ -59,7 +59,8 @@ public class MasterView {
 
         login_frame.setSize(600, 200);
         login_frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        login_frame.setVisible(true);
+        //login_frame.setVisible(true);
+        loginSuccess();
 
     }
 
