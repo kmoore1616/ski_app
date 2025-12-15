@@ -31,7 +31,7 @@ public class SummaryController {
             total_vert += day.getVertical();
             if(day.getVertical() > summaryView.getVertical_slider()){
                 content += (day);
-                content += '\n';
+                content += "\n----------------------------------------------------------------\n";
             }
         }
         summaryView.setContent_area(content);
