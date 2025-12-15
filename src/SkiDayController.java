@@ -106,6 +106,7 @@ public class SkiDayController {
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
 
+
         }
     }
 

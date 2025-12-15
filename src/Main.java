@@ -28,7 +28,13 @@
 
  */
 
-import java.io.IOException;
+public class Main {
+    public static void main(String[] args){
+        SkiDayView view = new SkiDayView();
+
+        view.initUI();
+
+        SkiDayController controller = new SkiDayController(view);
 
 public class Main {
     public static void main(String[] args) throws IOException {

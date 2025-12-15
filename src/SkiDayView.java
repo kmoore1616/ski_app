@@ -17,47 +17,32 @@ import java.util.ArrayList;
 public class SkiDayView {
     // --- Main Application Components ---
     private JFrame frame;
-    private JDialog entry_dialog, update_dialog;
-
-    // --- Panels (Layout) ---
-    private JPanel main_panel, content_panel, button_panel, ski_day_panel;
-
-    // --- Entry/Update Dialog Components ---
-    private JPanel dialog_input_panel, dialog_action_panel, update_action_panel;
-
-    // --- Input Fields (Text) ---
-    private JTextField date_field, location_field, condition_field, vertical_field;
-
-    // --- Input Fields (Text Areas & Scrolling) ---
-    private JTextArea runs_area, review_area;
-    private JScrollPane runs_scroll, review_scroll;
-
-    // --- JList & Data Model ---
-    private JList<SkiDay> dayList;
-    private DefaultListModel<SkiDay> dayListModel;
-    private JScrollPane content_scroll;
-
-    // --- Action Buttons (Main Frame) ---
-    private JButton enter_day, refresh, delete_entry_button, update_button, print_page_button;
-
-    // --- Action Buttons (Dialogs) ---
-    private JButton dialog_submit_button, dialog_cancel_button, submit_update_button, cancel_update_button;
-
-    // --- Resources & Styling ---
+    private JPanel toolbar_panel, button_panel, content_panel, main_panel, delete_entry_panel, print_panel;
+    private JTextArea content_area;
+    private JButton enter_day, refresh, ski_day_button, summary_button, forecast_button, delete_entry_button;
+    private JButton delete_cancel, delete_inner_button, print_page_button;
     private Image refresh_icon;
-    private Font content_font, button_font;
+    private JDialog entry_dialog, delete_dialog, print_dialog;
+    private JPanel dialog_input_panel, dialog_action_panel, dialog_button_panel, dialog_resort_panel, dialog_tour_panel;
+    private JRadioButton resort_button, tour_button;
+    private ButtonGroup ski_day_type_group;
+    private JTextField date_field, location_field, condition_field, avy_field, vertical_field;
+    private JTextField resort_field, delete_entry;
+    private JTextArea review_area, runs_area;
+    private JButton dialog_submit_button, dialog_cancel_button;
+    private JScrollPane runs_scroll, review_scroll, content_scroll;
+
+    private final int RESORT = 0;
+    private final int TOUR = 1;
 
 
+    public SkiDayView(){
+        // To switch screens can I have this return a panel object with everything, then add to frame in a master view
+        // Call method from the master view? Each screen view does the same?
 
-    public SkiDayView(JFrame frame, Font content_font, Font button_font){
-        // Main Frame Components
-        this.frame=frame;
-        dayListModel = new DefaultListModel<>();
-        dayList = new JList<>(dayListModel);
-        content_scroll = new JScrollPane(dayList);
-        main_panel = new JPanel();
-        ski_day_panel = new JPanel();
-        // Top panel
+        // Review GUI
+        frame = new JFrame();
+        toolbar_panel = new JPanel();
         button_panel = new JPanel();
         content_panel = new JPanel();
         enter_day = new JButton("Enter Day");
@@ -149,8 +134,9 @@ public class SkiDayView {
 
         initDialog();
 
-        ski_day_panel.setLayout(new BorderLayout());
-        ski_day_panel.add(main_panel);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        frame.setVisible(true);
     }
 
     public void initFonts(){
@@ -236,9 +222,18 @@ public class SkiDayView {
 
     //public SkiDay(int id, String date, String conditions, String location, String runs, int vertical, String review) {
     public void updateContentArea(ArrayList<SkiDay> days){
-        dayListModel.clear();
-        for(int i=0; i<days.size(); i++){
-            dayListModel.add(i, days.get(i));
+        String content = "";
+        for(SkiDay day : days){
+            String id = String.valueOf(day.getId());
+            String date = day.getDate();
+            String location = day.getLocation();
+            String conditions = day.getConditions();
+            String runs = day.getRuns();
+            String vertical = String.valueOf(day.getVertical());
+            String reveiw = day.getReview();
+            content += ("ID: " +id+ " Date: " + date  + " Location: " + location + " Conditions: " + conditions +" Vertical: "
+                    + vertical+ "\nRuns: " + runs + "\nReview: " + reveiw + "\n\n");
+
         }
     }
 
@@ -265,9 +260,7 @@ public class SkiDayView {
         return location_field.getText();
     }
 
-    public String getCondition_field() {
-        return condition_field.getText();
-    }
+    public String getCondition_field() {return condition_field.getText();}
 
     public String getVertical_field() {return vertical_field.getText();}
 
